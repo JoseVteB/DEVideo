@@ -5,12 +5,15 @@ find_package(Wayland	REQUIRED)
 add_executable(${PROJECT_NAME}) 
 target_sources(${PROJECT_NAME} 
 PRIVATE 
-	main.c
+	main.c 
+	wl_client.c 
+	controller.c 
 )
 
 target_include_directories(${PROJECT_NAME} 
 PRIVATE 
-	${PKG_WAYLAND_INCLUDE_DIRS}
+	${PKG_WAYLAND_INCLUDE_DIRS} 
+	${CMAKE_SOURCE_DIR}/include/ 
 )
 
 target_link_libraries(${PROJECT_NAME} 
