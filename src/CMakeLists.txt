@@ -6,14 +6,13 @@ add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} 
 PRIVATE 
 	main.c 
-	wl_client.c 
+	client.c 
 	controller.c 
 )
 
 target_include_directories(${PROJECT_NAME} 
 PRIVATE 
 	${PKG_WAYLAND_INCLUDE_DIRS} 
-	${CMAKE_SOURCE_DIR}/include/ 
 )
 
 target_link_libraries(${PROJECT_NAME} 
