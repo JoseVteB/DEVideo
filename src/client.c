@@ -8,29 +8,34 @@
 #include "client.h"
 
 /* Wayland client context */
-static struct wl_display*	p_display;
-static struct wl_registry*	p_registry;
-static struct wl_compositor*	p_compositor;
+struct WLContext {
+	struct wl_display*	pDisplay;
+	struct wl_registry*	pRegistry;
+	struct wl_compositor*	pCompositor;
+	struct wl_surface*	pSurface;
+	struct xdg_surface*	pXDGsurface;
+	struct xdg_toplevel*	pXDGtoplevel;
+} wlContext;
 
 /* Register globals */
 static void
-registry_handle_global(void* p_data, 
-		       struct wl_registry* p_registry, 
+registry_handle_global(void* pData, 
+		       struct wl_registry* pRegistry, 
 		       uint32_t name, 
-		       const char* p_interface, 
+		       const char* pInterface, 
 		       uint32_t version) 
 {
-	if (strcmp(p_interface, wl_compositor_interface.name) == 0) {
-		p_compositor = wl_registry_bind(p_registry, 
-						name, 
-					  	&wl_compositor_interface, 
-					  	version);
+	if (strcmp(pInterface, wl_compositor_interface.name) == 0) {
+		wlContext.pCompositor = wl_registry_bind(pRegistry, 
+							name, 
+							&wl_compositor_interface, 
+							version);
 	} 
 }
 
 static void 
-registry_handle_global_remove(void* p_data, 
-			      struct wl_registry* p_registry, 
+registry_handle_global_remove(void* pData, 
+			      struct wl_registry* pRegistry, 
 			      uint32_t name) 
 {
 	// This space deliberately left blank
@@ -46,16 +51,16 @@ int
 init_client(void) 
 {
 	/* Display */
-	p_display = wl_display_connect(nullptr);
-	if (!p_display) {
+	wlContext.pDisplay = wl_display_connect(nullptr);
+	if (!wlContext.pDisplay) {
 		fputs("Failed to connect to a Wayland display.\n", stderr);
 		return EXIT_FAILURE;
 	}
 
 	/* Registry */
-	p_registry = wl_display_get_registry(p_display);
-	wl_registry_add_listener(p_registry, &registry_listener, nullptr);
-	wl_display_roundtrip(p_display);
+	wlContext.pRegistry = wl_display_get_registry(wlContext.pDisplay);
+	wl_registry_add_listener(wlContext.pRegistry, &registry_listener, nullptr);
+	wl_display_roundtrip(wlContext.pDisplay);
 
 	return EXIT_SUCCESS;
 }
@@ -63,5 +68,7 @@ init_client(void)
 void 
 close_client(void) 
 {
-	wl_display_disconnect(p_display);
+	wl_compositor_destroy(wlContext.pCompositor);
+	wl_registry_destroy(wlContext.pRegistry);
+	wl_display_disconnect(wlContext.pDisplay);
 }
