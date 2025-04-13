@@ -1,11 +1,14 @@
+#include <libgen.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "controller.h"
 
 int 
 main(int argc, char* argv[])
 {
-	init_controller();
+	const char* appPath = dirname(argv[0]);
+	chdir(appPath);
 
-	return EXIT_SUCCESS;
+	return run_app();
 }

@@ -44,7 +44,7 @@ debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	switch (messageSeverity) {
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: 
 			output = stderr;
-			severity = "[\033[0;30mERROR\033[0m]";
+			severity = "[\033[0;31mERROR\033[0m]";
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
 			output = stdout;
@@ -66,16 +66,16 @@ debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
 	char* type;
 	switch (messageType) {
 		case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
-			type = "GENERAL";
+			type = "[GENERAL]";
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
-			type = "VALIDATION";
+			type = "[VALIDATION]";
 			break;
 		case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
-			type = "PERFORMANCE";
+			type = "[PERFORMANCE]";
 			break;
 		default:
-			type = "UNKNOWN";
+			type = "[UNKNOWN]";
 			break;
 	}
 

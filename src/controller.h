@@ -2,6 +2,6 @@
 #define	CONTROLLER_H
 
 int
-init_controller(void);
+run_app(void);
 
 #endif	/* CONTROLLER_H */

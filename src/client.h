@@ -4,6 +4,9 @@
 int
 init_client(void);
 
+void 
+update_client(void);
+
 void
 close_client(void);
 

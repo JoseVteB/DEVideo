@@ -30,6 +30,8 @@ xdg_surface_configure(void* pData,
 {
 	wlState* pState = pData;
 	/* TODO */
+	xdg_surface_ack_configure(pXDG_surface, serial);
+	wl_surface_commit(pState->pSurface);
 }
 
 static const struct xdg_surface_listener 
@@ -110,10 +112,21 @@ init_client(void)
 
 	context.pXDGtoplevel = xdg_surface_get_toplevel(context.pXDGsurface);
 	xdg_toplevel_set_title(context.pXDGtoplevel, "DEVideo");
+	wl_surface_commit(context.pSurface);
+	wl_display_roundtrip(context.pDisplay);
 
-	init_renderer("DEVideo");
+	if (init_renderer("DEVideo", 
+		   	context.pDisplay, 
+		   	context.pSurface) != EXIT_SUCCESS) { return EXIT_FAILURE; }
 
 	return EXIT_SUCCESS;
+}
+
+void 
+update_client(void) 
+{
+	render_surface();
+	wl_display_dispatch(context.pDisplay);
 }
 
 void 

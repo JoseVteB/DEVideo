@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define VK_USE_PLATFORM_WAYLAND_KHR
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_wayland.h>
+#include <wayland-client.h>
 
+#include "devices.h"
+#include "renderer.h"
 #include "validation.h"
 
 #ifdef NDEBUG
@@ -18,7 +23,9 @@ static const char* instanceExtensions[] = {
 	"VK_EXT_debug_utils", 
 };
 
-int 
+VkSurfaceKHR surface;
+
+VkResult 
 create_instance(const char* appName) 
 {
 	if (enableValidationLayers && !check_validation_layers_support()) {
@@ -55,24 +62,61 @@ create_instance(const char* appName)
 
 	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
 		fputs("Renderer: failed to create a Vulkan instance.\n", stderr);
-		return EXIT_FAILURE;
+		return VK_ERROR_INITIALIZATION_FAILED;
 	}
 
-	return EXIT_SUCCESS;
+	return VK_SUCCESS;
+}
+
+VkResult 
+create_surface(VkInstance instance, 
+	       struct wl_display* pDisplay, 
+	       struct wl_surface* pSurface) 
+{
+	VkWaylandSurfaceCreateInfoKHR createInfo = { };
+	createInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+	createInfo.display = pDisplay;
+	createInfo.surface = pSurface;
+
+	if (vkCreateWaylandSurfaceKHR(instance, 
+				       &createInfo, 
+				       nullptr, 
+				       &surface) != VK_SUCCESS) {
+		fputs("Renderer: failed to create the main vulkan surface.\n", stderr);
+		return VK_ERROR_INITIALIZATION_FAILED;
+	}
+
+	return VK_SUCCESS;
 }
 
 int 
-init_renderer(const char* appName) 
+init_renderer(const char* appName, 
+	      struct wl_display* pDisplay, 
+	      struct wl_surface* pSurface) 
 {
-	create_instance(appName);
+	if (create_instance(appName) != VK_SUCCESS) { return EXIT_FAILURE; }
 	if (enableValidationLayers) { setup_debug_messenger(instance); }
+
+	if (create_surface(instance, pDisplay, pSurface) != VK_SUCCESS) { 
+		return EXIT_FAILURE; 
+	}
+	if (setup_devices(instance, surface, 800, 600) != VK_SUCCESS) { return EXIT_FAILURE; }
 
 	return EXIT_SUCCESS;
 }
 
 void 
-close_renderer() 
+render_surface(void) 
 {
+	draw_frame();
+}
+
+void 
+close_renderer(void) 
+{
+	close_devices();
+	vkDestroySurfaceKHR(instance, surface, nullptr);
+
 	if (enableValidationLayers) { close_debug_messenger(instance); }
 	vkDestroyInstance(instance, nullptr);
 }
