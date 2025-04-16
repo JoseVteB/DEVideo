@@ -2,6 +2,7 @@
 #
 find_package(Wayland	REQUIRED)
 find_package(Vulkan	REQUIRED)
+find_package(X11	REQUIRED)
 
 set(BUILD_DIR	${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 
@@ -79,4 +80,5 @@ target_link_libraries(${PROJECT_NAME}
 PRIVATE
 	${PKG_WAYLAND_LIBRARIES} 
 	Vulkan::Vulkan 
+	X11::xkbcommon 
 )
