@@ -4,8 +4,6 @@
 #include "client.h"
 #include "controller.h"
 
-static bool terminate = false;
-
 int
 init_controller(void) 
 {
@@ -28,7 +26,7 @@ run_app(void)
 {
 	if (init_controller() != EXIT_SUCCESS) { return EXIT_FAILURE; }
 
-	while(!terminate) {
+	for(;;) {
 		update_client();
 	}
 
