@@ -1,8 +1,9 @@
-#	Wayland library
+#	Required modules
 #
 find_package(Wayland	REQUIRED)
 find_package(Vulkan	REQUIRED)
 find_package(X11	REQUIRED)
+find_package(Doxygen)
 
 set(BUILD_DIR	${PROJECT_BINARY_DIR}/${PROJECT_NAME})
 
@@ -82,3 +83,30 @@ PRIVATE
 	Vulkan::Vulkan 
 	X11::xkbcommon 
 )
+
+include(CMakeDependentOption)
+cmake_dependent_option(BUILD_DOCS 
+	"Generates the project documentation." 
+	OFF 
+	"DOXYGEN_FOUND" 
+	OFF
+)
+if (BUILD_DOCS)
+	set(DOCS_DIR ${BUILD_DIR}/docs)
+	file(MAKE_DIRECTORY ${DOCS_DIR})
+	set(DOXYGEN_OUTPUT_DIRECTORY ${DOCS_DIR})
+	set(DOXYGEN_EXCLUDE ${WL_PROTOCOLS_DIR})
+
+	set(DOXYGEN_QUIET YES)
+	set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
+	set(DOXYGEN_VERBATIM_HEADERS NO)
+	set(DOXYGEN_HIDE_UNDOC_MEMBERS YES)
+	set(DOXYGEN_HIDE_UNDOC_CLASSES YES)
+
+	doxygen_add_docs(${PROJECT_NAME}_docs
+		${CMAKE_CURRENT_SOURCE_DIR} 
+		ALL 
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/docs 
+		COMMENT "Generating project documentation." 
+	)
+endif()

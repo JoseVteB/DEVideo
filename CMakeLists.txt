@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.90)
 project(DEVideo 
 	DESCRIPTION	"A simple video decoder/encoder."
 	LANGUAGES	C

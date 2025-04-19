@@ -1,7 +1,7 @@
 #ifndef	CLIENT_H
 #define	CLIENT_H
 
-int
+int 
 init_client(void);
 
 void 
